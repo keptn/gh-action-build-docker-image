@@ -1,18 +1,19 @@
 #!/bin/bash
 
-if [[ "$#" -ne 4 ]]; then
+if [[ "$#" -le 4 ]]; then
   echo "Usage: $0 IMAGE FOLDER VERSION DATETIME"
-  echo "      Example: $0 keptn/api api/ 1.2.3 20210101101210"
+  echo "      Example: $0 keptn/api api/ 1.2.3 20210101101210 amd64"
   echo "      Your command: $0 $*"
   exit 1
 fi
 
 # todo: not sure if we can use parameters like this
-# ${IMAGE}=$1 ${FOLDER}=$2 ${VERSION}=$3 ${DATETIME}=$4
+# ${IMAGE}=$1 ${FOLDER}=$2 ${VERSION}=$3 ${DATETIME}=$4 ${PLATFORMS}=$5
 IMAGE=$1
 FOLDER=$2
 VERSION=$3
 DATETIME=$4
+PLATFORMS=${5:-""}
 
 # store pwd
 pwd=$(pwd)
@@ -33,10 +34,19 @@ cd ./${FOLDER}
 sed -i '/#travis-uncomment/s/^#travis-uncomment //g' Dockerfile
 sed -i '/#build-uncomment/s/^#build-uncomment //g' Dockerfile
 cat MANIFEST
-docker build . -t "${IMAGE}:${VERSION}.${DATETIME}" -t "${IMAGE}:${VERSION}" --build-arg version="${VERSION}"
+if [[ "$PLATFORMS" != "" ]]; then
+  # use buildx and specify platform
+  echo "PLATFORMS is set to $PLATFORMS, using buildx"
+  DOCKER_BUILD="docker buildx build --platform ${PLATFORMS}"
+else
+  # default build without platforms
+  DOCKER_BUILD="docker build"
+fi
+
+$DOCKER_BUILD . -t "${IMAGE}:${VERSION}.${DATETIME}" -t "${IMAGE}:${VERSION}" --build-arg version="${VERSION}"
 
 if [[ $? -ne 0 ]]; then
-  echo "Failed to build Docker Image ${IMAGE}:${VERSION}.${DATETIME}, exiting"
+  echo "Failed to build Docker Image ${IMAGE}:${VERSION}.${DATETIME} using ${DOCKER_BUILD}, exiting"
   echo "::error file=${FOLDER}/Dockerfile::Failed to build Docker Image"
   exit 1
 fi
