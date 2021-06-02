@@ -14,6 +14,9 @@ inputs:
   DATETIME:
     description: Optional datetime for the tag of the docker image (will be set automatically if left empty)
     default: unset
+  FILE:
+    description: Optional name of the Dockerfile
+    default: 'Dockerfile'
 runs:
   using: composite
   steps: 
@@ -71,4 +74,5 @@ runs:
         DOCKER_FOLDER: ${{ inputs.DOCKER_FOLDER }}
         VERSION: ${{ inputs.VERSION }}
         DATETIME: ${{ steps.check_datetime.outputs.DATETIME }}
-      run: ${{ github.action_path }}/build_docker_image.sh "${IMAGE_NAME}" "${DOCKER_FOLDER}" "${VERSION}" "${DATETIME}"
+        FILE: ${{ inputs.FILE }}
+      run: ${{ github.action_path }}/build_docker_image.sh "${IMAGE_NAME}" "${DOCKER_FOLDER}" "${VERSION}" "${DATETIME}" "${FILE}"
