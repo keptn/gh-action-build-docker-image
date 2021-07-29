@@ -46,12 +46,17 @@ fi
 # push all tags that we just built
 docker push "${IMAGE}:${VERSION}.${DATETIME}" && docker push "${IMAGE}:${VERSION}"
 
+report=""
+
 if [[ $? -ne 0 ]]; then
   echo "::warning file=${FOLDER}/${FILE}::Failed to push ${IMAGE}:${VERSION}.${DATETIME} to DockerHub, continuing anyway"
-  echo "* Failed to push ${IMAGE}:${VERSION}.${DATETIME} and ${IMAGE}:${VERSION} (Source: ${FOLDER})" >> ${pwd}/docker_build_report.txt
+  report="* Failed to push ${IMAGE}:${VERSION}.${DATETIME} and ${IMAGE}:${VERSION} (Source: ${FOLDER})"
 else
-  echo "* Pushed ${IMAGE}:${VERSION}.${DATETIME} and ${IMAGE}:${VERSION} (Source: ${FOLDER})" >> ${pwd}/docker_build_report.txt
+  report="* Pushed ${IMAGE}:${VERSION}.${DATETIME} and ${IMAGE}:${VERSION} (Source: ${FOLDER})"
 fi
+
+echo "$report" >> "${pwd}/docker_build_report.txt"
+echo "::set-output name=build-report::$report"
 
 # change back to previous directory
 cd "${pwd}" || exit 1
