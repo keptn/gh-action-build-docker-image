@@ -28,11 +28,11 @@ fi
 echo "Building Docker Image ${IMAGE}:${VERSION}.${DATETIME} from ${FOLDER}${FILE}"
 
 # change into the subfolder where the needed files are hosted
-cd ./${FOLDER}
+cd "./${FOLDER}" || exit 1
 
 # uncomment certain lines from Dockerfile that are for CI builds only
-sed -i '/#travis-uncomment/s/^#travis-uncomment //g' ${FILE}
-sed -i '/#build-uncomment/s/^#build-uncomment //g' ${FILE}
+sed -i '/#travis-uncomment/s/^#travis-uncomment //g' "${FILE}"
+sed -i '/#build-uncomment/s/^#build-uncomment //g' "${FILE}"
 cat MANIFEST
 
 docker build . -f "${FILE}" -t "${IMAGE}:${VERSION}.${DATETIME}" -t "${IMAGE}:${VERSION}" --build-arg version="${VERSION}"
@@ -54,4 +54,4 @@ else
 fi
 
 # change back to previous directory
-cd ${pwd}
+cd "${pwd}" || exit 1
