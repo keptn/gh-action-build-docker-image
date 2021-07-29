@@ -21,7 +21,7 @@ inputs:
     default: 'Dockerfile'
     required: false
 outputs:
-  report:
+  REPORT:
     value: ${{ steps.composite-action-build-docker-image.outputs.build-report }}
     description: 'Reports back a message with the outcome of the docker build. If there was an error it will be reported here.'
 runs:

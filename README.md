@@ -13,7 +13,7 @@ This repo provides a utility GitHub action for the [CI Workflow](https://github.
 
 ## Outputs
 
-None at the moment
+* `REPORT` - Reports back a message with the outcome of the docker build. If there was an error it will be reported here.
 
 ## Example usage
 
